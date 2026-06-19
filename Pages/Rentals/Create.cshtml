@@ -1,0 +1,30 @@
+﻿@model T2502E_Comicsys.ViewModels.RentalViewModel
+
+<form asp-action="Create">
+    <!-- Chọn Khách hàng -->
+    <div class="form-group">
+        <label>Khách hàng</label>
+        <select asp-for="CustomerId" asp-items="Model.CustomerList" class="form-control">
+            <option value="">-- Chọn khách hàng --</option>
+        </select>
+        <span asp-validation-for="CustomerId" class="text-danger"></span>
+    </div>
+
+    <!-- Chọn Sách -->
+    <div class="form-group">
+        <label>Sách</label>
+        <select asp-for="ComicBookId" asp-items="Model.ComicBookList" class="form-control">
+            <option value="">-- Chọn sách --</option>
+        </select>
+        <span asp-validation-for="ComicBookId" class="text-danger"></span>
+    </div>
+
+    <!-- Số lượng -->
+    <div class="form-group">
+        <label asp-for="Quantity"></label>
+        <input asp-for="Quantity" class="form-control" />
+        <span asp-validation-for="Quantity" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Xác nhận thuê</button>
+</form>

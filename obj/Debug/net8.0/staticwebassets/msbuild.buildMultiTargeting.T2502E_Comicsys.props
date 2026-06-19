@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\T2502E_Comicsys.props" />
+</Project>
