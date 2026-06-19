@@ -10,8 +10,8 @@ using T2502E_Comicsys.Data;
 
 namespace T2502E_Comicsys.Migrations
 {
-    [DbContext(typeof(ComicSystemContext))]
-    partial class ComicSystemContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(AppDbContext))]
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -22,7 +22,7 @@ namespace T2502E_Comicsys.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("T2502E_Comicsys.Models.ComicBook", b =>
+            modelBuilder.Entity("T2502E_Comicsys.Models.ComicBooks", b =>
                 {
                     b.Property<int>("ComicBookId")
                         .ValueGeneratedOnAdd()
@@ -36,7 +36,7 @@ namespace T2502E_Comicsys.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<decimal>("PricePerDay")
-                        .HasColumnType("decimal(10, 2)");
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -48,13 +48,13 @@ namespace T2502E_Comicsys.Migrations
                     b.ToTable("ComicBooks");
                 });
 
-            modelBuilder.Entity("T2502E_Comicsys.Models.Customer", b =>
+            modelBuilder.Entity("T2502E_Comicsys.Models.Customers", b =>
                 {
-                    b.Property<int>("CustomerId")
+                    b.Property<int>("CustomerID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CustomerId"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CustomerID"));
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -66,44 +66,15 @@ namespace T2502E_Comicsys.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("varchar(15)");
 
-                    b.Property<DateTime>("RegisterDate")
+                    b.Property<DateTime>("RegistationDate")
                         .HasColumnType("datetime(6)");
 
-                    b.HasKey("CustomerId");
+                    b.HasKey("CustomerID");
 
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("T2502E_Comicsys.Models.Rental", b =>
-                {
-                    b.Property<int>("RentalId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("RentalId"));
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("RentalDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("ReturnDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.HasKey("RentalId");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("Rentals");
-                });
-
-            modelBuilder.Entity("T2502E_Comicsys.Models.RentalDetail", b =>
+            modelBuilder.Entity("T2502E_Comicsys.Models.RentalDetails", b =>
                 {
                     b.Property<int>("RentalDetailId")
                         .ValueGeneratedOnAdd()
@@ -114,8 +85,8 @@ namespace T2502E_Comicsys.Migrations
                     b.Property<int>("ComicBookId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(10, 2)");
+                    b.Property<decimal>("PricePerDay")
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -132,27 +103,44 @@ namespace T2502E_Comicsys.Migrations
                     b.ToTable("RentalDetails");
                 });
 
-            modelBuilder.Entity("T2502E_Comicsys.Models.Rental", b =>
+            modelBuilder.Entity("T2502E_Comicsys.Models.Rentals", b =>
                 {
-                    b.HasOne("T2502E_Comicsys.Models.Customer", "Customer")
-                        .WithMany("Rentals")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("RentalID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Navigation("Customer");
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("RentalID"));
+
+                    b.Property<int>("CustomerID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RentalDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("ReturnDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("RentalID");
+
+                    b.HasIndex("CustomerID");
+
+                    b.ToTable("Rentals");
                 });
 
-            modelBuilder.Entity("T2502E_Comicsys.Models.RentalDetail", b =>
+            modelBuilder.Entity("T2502E_Comicsys.Models.RentalDetails", b =>
                 {
-                    b.HasOne("T2502E_Comicsys.Models.ComicBook", "ComicBook")
+                    b.HasOne("T2502E_Comicsys.Models.ComicBooks", "ComicBook")
                         .WithMany("RentalDetails")
                         .HasForeignKey("ComicBookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("T2502E_Comicsys.Models.Rental", "Rental")
-                        .WithMany("RentalDetails")
+                    b.HasOne("T2502E_Comicsys.Models.Rentals", "Rental")
+                        .WithMany()
                         .HasForeignKey("RentalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -162,19 +150,25 @@ namespace T2502E_Comicsys.Migrations
                     b.Navigation("Rental");
                 });
 
-            modelBuilder.Entity("T2502E_Comicsys.Models.ComicBook", b =>
+            modelBuilder.Entity("T2502E_Comicsys.Models.Rentals", b =>
+                {
+                    b.HasOne("T2502E_Comicsys.Models.Customers", "Customer")
+                        .WithMany("Rentals")
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("T2502E_Comicsys.Models.ComicBooks", b =>
                 {
                     b.Navigation("RentalDetails");
                 });
 
-            modelBuilder.Entity("T2502E_Comicsys.Models.Customer", b =>
+            modelBuilder.Entity("T2502E_Comicsys.Models.Customers", b =>
                 {
                     b.Navigation("Rentals");
-                });
-
-            modelBuilder.Entity("T2502E_Comicsys.Models.Rental", b =>
-                {
-                    b.Navigation("RentalDetails");
                 });
 #pragma warning restore 612, 618
         }

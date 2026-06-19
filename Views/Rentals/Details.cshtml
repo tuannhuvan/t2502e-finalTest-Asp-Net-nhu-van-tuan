@@ -1,0 +1,54 @@
+@model T2502E_Comicsys.Models.Rentals
+
+@{
+    ViewData["Title"] = "Chi Tiết Đơn Thuê";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Chi Tiết Đơn Thuê</h1>
+
+<div>
+    <h4>Thông tin Rentals</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3 fw-bold">
+            Khách hàng
+        </dt>
+        <dd class="col-sm-9">
+            @if (Model?.Customer != null)
+            {
+                @Html.DisplayFor(model => model.Customer!.FullName)
+            }
+            else
+            {
+                <span class="text-muted">Không xác định</span>
+            }
+        </dd>
+
+        <dt class="col-sm-3 fw-bold">
+            Ngày thuê
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.RentalDate)
+        </dd>
+
+        <dt class="col-sm-3 fw-bold">
+            Ngày trả dự kiến
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.ReturnDate)
+        </dd>
+
+        <dt class="col-sm-3 fw-bold">
+            Trạng thái
+        </dt>
+        <dd class="col-sm-9">
+            <span class="badge bg-info text-dark">@Html.DisplayFor(model => model.Status)</span>
+        </dd>
+    </dl>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model?.RentalID" class="btn btn-warning">Sửa đơn thuê</a> |
+    <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+</div>

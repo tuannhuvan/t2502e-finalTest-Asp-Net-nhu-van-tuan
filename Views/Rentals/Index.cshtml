@@ -1,0 +1,61 @@
+@model IEnumerable<T2502E_Comicsys.Models.Rentals>
+
+@{
+    ViewData["Title"] = "Danh Sách Đơn Thuê Truyện";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Quản Lý Đơn Thuê</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Tạo Mới Đơn Thuê</a>
+</p>
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th>
+            Khách Hàng
+        </th>
+        <th>
+            Ngày Thuê
+        </th>
+        <th>
+            Ngày Trả Dự Kiến
+        </th>
+        <th>
+            Trạng Thái
+        </th>
+        <th>Thao tác</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @if (item.Customer != null)
+                {
+                    @Html.DisplayFor(modelItem => item.Customer!.FullName)
+                }
+                else
+                {
+                    <span class="text-muted">Không xác định</span>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RentalDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReturnDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.RentalID" class="btn btn-sm btn-warning">Sửa</a> | 
+                <a asp-action="Details" asp-route-id="@item.RentalID" class="btn btn-sm btn-info">Chi tiết</a> | 
+                <a asp-action="Delete" asp-route-id="@item.RentalID" class="btn btn-sm btn-danger">Xóa</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

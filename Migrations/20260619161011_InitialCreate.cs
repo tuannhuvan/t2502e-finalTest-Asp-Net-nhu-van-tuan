@@ -25,7 +25,7 @@ namespace T2502E_Comicsys.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Author = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    PricePerDay = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
+                    PricePerDay = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -37,17 +37,17 @@ namespace T2502E_Comicsys.Migrations
                 name: "Customers",
                 columns: table => new
                 {
-                    CustomerId = table.Column<int>(type: "int", nullable: false)
+                    CustomerID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FullName = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     PhoneNumber = table.Column<string>(type: "varchar(15)", maxLength: 15, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    RegisterDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    RegistationDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Customers", x => x.CustomerId);
+                    table.PrimaryKey("PK_Customers", x => x.CustomerID);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -55,22 +55,22 @@ namespace T2502E_Comicsys.Migrations
                 name: "Rentals",
                 columns: table => new
                 {
-                    RentalId = table.Column<int>(type: "int", nullable: false)
+                    RentalID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    CustomerID = table.Column<int>(type: "int", nullable: false),
                     RentalDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     ReturnDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Status = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    Status = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Rentals", x => x.RentalId);
+                    table.PrimaryKey("PK_Rentals", x => x.RentalID);
                     table.ForeignKey(
-                        name: "FK_Rentals_Customers_CustomerId",
-                        column: x => x.CustomerId,
+                        name: "FK_Rentals_Customers_CustomerID",
+                        column: x => x.CustomerID,
                         principalTable: "Customers",
-                        principalColumn: "CustomerId",
+                        principalColumn: "CustomerID",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -84,7 +84,7 @@ namespace T2502E_Comicsys.Migrations
                     RentalId = table.Column<int>(type: "int", nullable: false),
                     ComicBookId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
+                    PricePerDay = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -99,7 +99,7 @@ namespace T2502E_Comicsys.Migrations
                         name: "FK_RentalDetails_Rentals_RentalId",
                         column: x => x.RentalId,
                         principalTable: "Rentals",
-                        principalColumn: "RentalId",
+                        principalColumn: "RentalID",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -115,9 +115,9 @@ namespace T2502E_Comicsys.Migrations
                 column: "RentalId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rentals_CustomerId",
+                name: "IX_Rentals_CustomerID",
                 table: "Rentals",
-                column: "CustomerId");
+                column: "CustomerID");
         }
 
         /// <inheritdoc />

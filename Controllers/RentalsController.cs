@@ -1,56 +1,222 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using T2502E_Comicsys.Data;
 using T2502E_Comicsys.Models;
 using T2502E_Comicsys.ViewModels;
 
-namespace T2502E_Comicsys.Controllers;
-
-public class RentalsController(ComicSystemContext context) : Controller
+namespace T2502E_Comicsys.Controllers
 {
-    // GET: Tạo trang thuê
-    public IActionResult Create()
+    public class RentalsController : Controller
     {
-        var model = new RentalViewModel
+        private readonly AppDbContext _context;
+
+        public RentalsController(AppDbContext context)
         {
-            CustomerList = context.Customers.Select(c => new SelectListItem { Value = c.CustomerId.ToString(), Text = c.FullName }),
-            ComicBookList = context.ComicBooks.Select(b => new SelectListItem { Value = b.ComicBookId.ToString(), Text = b.Title })
-        };
-        return View(model);
-    }
-
-    // POST: Lưu thông tin thuê
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(RentalViewModel model)
-    {
-        if (ModelState.IsValid)
-        {
-            // 1. Tạo Rental
-            var rental = new Rental {
-                CustomerId = model.CustomerId,
-                RentalDate = model.RentalDate,
-                ReturnDate = model.ReturnDate,
-                Status = "Đang thuê"
-            };
-            context.Rentals.Add(rental);
-            await context.SaveChangesAsync(); // Cần save để có RentalId
-
-            // 2. Lấy giá sách để tính tiền
-            var book = await context.ComicBooks.FindAsync(model.ComicBookId);
-            
-            // 3. Tạo RentalDetail
-            var detail = new RentalDetail {
-                RentalId = rental.RentalId,
-                ComicBookId = model.ComicBookId,
-                Quantity = model.Quantity,
-                Price = book.PricePerDay * model.Quantity // Logic tính giá đơn giản
-            };
-            context.RentalDetails.Add(detail);
-            await context.SaveChangesAsync();
-
-            return RedirectToAction("Index"); // Chuyển về trang danh sách thuê
+            _context = context;
         }
-        return View(model);
+
+        // GET: Rentals
+        public async Task<IActionResult> Index()
+        {
+            // Sử dụng .Include để nạp kèm thông tin Customer, giúp lấy được thuộc tính FullName
+            var rentalsList = await _context.Rentals
+                .Include(r => r.Customer)
+                .ToListAsync();
+                                   
+            return View(rentalsList);
+        }
+
+        // GET: Rentals/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var rentals = await _context.Rentals
+                .Include(r => r.Customer)
+                .FirstOrDefaultAsync(m => m.RentalID == id);
+            if (rentals == null)
+            {
+                return NotFound();
+            }
+
+            return View(rentals);
+        }
+
+        // GET: Rentals/Create
+        public IActionResult Create()
+        {
+            var viewModel = new RentalViewModel
+            {
+                CustomerList = _context.Customers.Select(c => new SelectListItem
+                {
+                    Value = c.CustomerID.ToString(),
+                    Text = c.FullName
+                }).ToList(),
+                ComicBookList = _context.ComicBooks.Select(b => new SelectListItem
+                {
+                    Value = b.ComicBookId.ToString(),
+                    Text = b.Title
+                }).ToList()
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: Rentals/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(T2502E_Comicsys.ViewModels.RentalViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    // 1. Thêm vào bảng Rentals
+                    var rental = new Rentals
+                    {
+                        CustomerID = model.CustomerId,
+                        RentalDate = model.RentalDate,
+                        ReturnDate = model.ReturnDate,
+                        Status = model.Status
+                    };
+                    _context.Rentals.Add(rental);
+                    await _context.SaveChangesAsync(); 
+
+                    // 2. Thêm vào bảng RentalDetails
+                    var rentalDetail = new RentalDetails
+                    {
+                        RentalId = rental.RentalID, 
+                        ComicBookId = model.ComicBookId,
+                        Quantity = model.Quantity,
+                        PricePerDay = model.PricePerDay
+                    };
+                    _context.RentalDetails.Add(rentalDetail);
+                    await _context.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception)
+                {
+                    await transaction.RollbackAsync();
+                    ModelState.AddModelError("", "Đã xảy ra lỗi hệ thống khi lưu hóa đơn. Vui lòng thử lại.");
+                }
+            }
+
+            // Khi Form lỗi, nạp lại dữ liệu trực tiếp vào List của 'model' thay vì dùng ViewBag
+            model.CustomerList = _context.Customers.Select(c => new SelectListItem
+            {
+                Value = c.CustomerID.ToString(),
+                Text = c.FullName
+            }).ToList();
+
+            model.ComicBookList = _context.ComicBooks.Select(b => new SelectListItem
+            {
+                Value = b.ComicBookId.ToString(),
+                Text = b.Title
+            }).ToList();
+
+            // Trả lại model đã được nạp đầy đủ 2 danh sách list để giao diện render lại không bị trống
+            return View(model);
+        }
+
+        // GET: Rentals/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var rentals = await _context.Rentals.FindAsync(id);
+            if (rentals == null)
+            {
+                return NotFound();
+            }
+            ViewData["CustomerID"] = new SelectList(_context.Customers, "CustomerID", "FullName", rentals.CustomerID);
+            return View(rentals);
+        }
+
+        // POST: Rentals/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("RentalID,CustomerID,RentalDate,ReturnDate,Status")] Rentals rentals)
+        {
+            if (id != rentals.RentalID)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(rentals);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!RentalsExists(rentals.RentalID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["CustomerID"] = new SelectList(_context.Customers, "CustomerID", "FullName", rentals.CustomerID);
+            return View(rentals);
+        }
+
+        // GET: Rentals/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var rentals = await _context.Rentals
+                .Include(r => r.Customer)
+                .FirstOrDefaultAsync(m => m.RentalID == id);
+            if (rentals == null)
+            {
+                return NotFound();
+            }
+
+            return View(rentals);
+        }
+
+        // POST: Rentals/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var rentals = await _context.Rentals.FindAsync(id);
+            if (rentals != null)
+            {
+                _context.Rentals.Remove(rentals);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool RentalsExists(int id)
+        {
+            return _context.Rentals.Any(e => e.RentalID == id);
+        }
     }
 }

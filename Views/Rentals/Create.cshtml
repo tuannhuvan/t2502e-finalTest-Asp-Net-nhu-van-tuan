@@ -1,0 +1,69 @@
+@model T2502E_Comicsys.ViewModels.RentalViewModel
+
+@{
+    ViewData["Title"] = "Tạo Đơn Thuê Truyện";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Tạo Mới Đơn Thuê</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <h5 class="text-primary">1. Thông tin đơn thuê (Rentals)</h5>
+            <div class="form-group mb-3">
+                <label asp-for="CustomerId" class="control-label">Khách hàng</label>
+                <select asp-for="CustomerId" class="form-control" asp-items="Model.CustomerList">
+                    <option value="">-- Chọn khách hàng --</option>
+                </select>
+                <span asp-validation-for="CustomerId" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="RentalDate" class="control-label">Ngày thuê</label>
+                <input asp-for="RentalDate" class="form-control" type="date" />
+                <span asp-validation-for="RentalDate" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="ReturnDate" class="control-label">Ngày trả dự kiến</label>
+                <input asp-for="ReturnDate" class="form-control" type="date" />
+                <span asp-validation-for="ReturnDate" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Status" class="control-label">Trạng thái</label>
+                <input asp-for="Status" class="form-control" />
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+
+            <hr />
+            <h5 class="text-primary">2. Chi tiết truyện thuê (RentalDetails)</h5>
+            <div class="form-group mb-3">
+                <label asp-for="ComicBookId" class="control-label">Chọn truyện</label>
+                <select asp-for="ComicBookId" class="form-control" asp-items="Model.ComicBookList">
+                    <option value="">-- Chọn truyện --</option>
+                </select>
+                <span asp-validation-for="ComicBookId" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Quantity" class="control-label">Số lượng</label>
+                <input asp-for="Quantity" class="form-control" type="number" min="1" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="PricePerDay" class="control-label">Giá mỗi ngày (VNĐ)</label>
+                <input asp-for="PricePerDay" class="form-control" type="number" step="1000.0" />
+                <span asp-validation-for="PricePerDay" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-4">
+                <input type="submit" value="Xác nhận thuê" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

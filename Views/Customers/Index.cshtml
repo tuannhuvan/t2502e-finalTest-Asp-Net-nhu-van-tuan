@@ -1,4 +1,4 @@
-@model IEnumerable<T2502E_Comicsys.Models.Customer>
+@model IEnumerable<T2502E_Comicsys.Models.Customers>
 
 @{
     ViewData["Title"] = "Index";
@@ -20,7 +20,7 @@
                 @Html.DisplayNameFor(model => model.PhoneNumber)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.RegisterDate)
+                @Html.DisplayNameFor(model => model.RegistationDate)
             </th>
             <th></th>
         </tr>
@@ -35,12 +35,12 @@
                 @Html.DisplayFor(modelItem => item.PhoneNumber)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.RegisterDate)
+                @Html.DisplayFor(modelItem => item.RegistationDate)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.CustomerId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.CustomerId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.CustomerId">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.CustomerID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.CustomerID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.CustomerID">Delete</a>
             </td>
         </tr>
 }

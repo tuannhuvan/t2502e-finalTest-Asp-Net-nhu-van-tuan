@@ -1,4 +1,4 @@
-@model T2502E_Comicsys.Models.Customer
+@model T2502E_Comicsys.Models.Customers
 
 @{
     ViewData["Title"] = "Edit";
@@ -7,13 +7,13 @@
 
 <h1>Edit</h1>
 
-<h4>Customer</h4>
+<h4>Customers</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="CustomerId" />
+            <input type="hidden" asp-for="CustomerID" />
             <div class="form-group">
                 <label asp-for="FullName" class="control-label"></label>
                 <input asp-for="FullName" class="form-control" />
@@ -25,9 +25,9 @@
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="RegisterDate" class="control-label"></label>
-                <input asp-for="RegisterDate" class="form-control" />
-                <span asp-validation-for="RegisterDate" class="text-danger"></span>
+                <label asp-for="RegistationDate" class="control-label"></label>
+                <input asp-for="RegistationDate" class="form-control" />
+                <span asp-validation-for="RegistationDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

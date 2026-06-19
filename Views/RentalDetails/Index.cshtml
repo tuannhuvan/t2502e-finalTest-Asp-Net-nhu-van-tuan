@@ -1,0 +1,54 @@
+@model IEnumerable<T2502E_Comicsys.Models.RentalDetails>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PricePerDay)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Rental)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ComicBook)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PricePerDay)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rental.RentalID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ComicBook.ComicBookId)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.RentalDetailId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.RentalDetailId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.RentalDetailId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
